@@ -6,8 +6,7 @@ const ItemList = () => {
 
     useEffect(() => {
         const fetchItems = async () => {
-            debugger;
-            const response = await axios.get('http://localhost:8000/api/items/');
+            const response = await axios.get('http://localhost:8000/api/anuncios/');
             setItens(response.data);
         };
 
@@ -15,11 +14,13 @@ const ItemList = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Itens</h1>
-            <ul>
+        <div className="container mt-4">
+            <h1 className="mb-4">Itens</h1>
+            <ul className="list-group">
                 {itens.map(item => (
-                    <li key={item.id}>{item.nome}</li>
+                    <li key={item.id} className="list-group-item">
+                        {item.nome}
+                    </li>
                 ))}
             </ul>
         </div>

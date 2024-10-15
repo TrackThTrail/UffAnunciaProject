@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import Usuario, Anuncio, Chat, Mensagem, Avaliacao
 
-# Register your models here.
+admin.site.register(Usuario)
+admin.site.register(Anuncio)
+admin.site.register(Chat)
+admin.site.register(Mensagem)
+admin.site.register(Avaliacao)
