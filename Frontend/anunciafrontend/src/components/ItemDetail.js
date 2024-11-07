@@ -5,6 +5,9 @@ import axios from 'axios';
 const ItemDetail = () => {
     const { id } = useParams(); // Obtém o ID da URL
     const [item, setItem] = useState(null);
+    const [ws, setWs] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [messageInput, setMessageInput] = useState('');
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -19,11 +22,68 @@ const ItemDetail = () => {
         fetchItem();
     }, [id]);
 
-    if (!item) return <p>Carregando...</p>;
+    useEffect(() => {
+        // Limpeza do WebSocket quando o componente for desmontado
+        return () => {
+            if (ws) {
+                ws.close();
+            }
+        };
+    }, [ws]);
 
     const iniciarChat = () => {
-        console.log('aa'); // Redireciona para a rota de chat com o vendedor
+        debugger;
+        const socket = new WebSocket('ws://localhost:8001');
+    
+        socket.onopen = () => {
+            console.log('Conexão WebSocket estabelecida.');
+        };
+    
+        socket.onmessage = (event) => {
+            const newMessage = JSON.parse(event.data);
+            console.log('Mensagem recebida:', newMessage);
+            setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
+        };
+    
+        socket.onerror = (event) => {
+            // Se for um erro de evento, imprima as informações completas
+            if (event && event.message) {
+                console.error('Erro na conexão WebSocket:', event.message);
+                alert(`Erro na conexão WebSocket: ${event.message}`);
+            } else {
+                // Caso o erro seja um objeto Error (eventualmente)
+                console.error('Erro na conexão WebSocket:', event);
+                alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
+            }
+        };
+    
+        socket.onclose = () => {
+            console.log('Conexão WebSocket fechada.');
+        };
+    
+        setWs(socket);  // Atualiza o estado do WebSocket
     };
+
+    const enviarMensagem = async () => {
+        if (ws && messageInput) {
+            // Enviar mensagem através do WebSocket
+            ws.send(JSON.stringify({ message: messageInput }));
+    
+            // Enviar a mensagem para o Django para salvar no banco
+            try {
+                await axios.post('http://localhost:8000/api/chatmessages/', {
+                    sender: 'Usuário',  // Pode ser o nome do usuário ou outro identificador
+                    message: messageInput,
+                    item_id: id, // Id do item do chat
+                });
+                setMessageInput(''); // Limpar o campo de input
+            } catch (error) {
+                console.error('Erro ao salvar a mensagem:', error);
+            }
+        }
+    };
+
+    if (!item) return <p>Carregando...</p>;
 
     return (
         <div className="container mt-4">
@@ -31,9 +91,31 @@ const ItemDetail = () => {
             <p><strong>Categoria:</strong> {item.categoria}</p>
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
+            
             <button className="btn btn-primary" onClick={iniciarChat}>
                 Iniciar Chat com dono do Anúncio
             </button>
+
+            {ws && (
+                <div>
+                    <h3>Chat:</h3>
+                    <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
+                        {messages.map((msg, index) => (
+                            <div key={index}>{msg.message}</div>
+                        ))}
+                    </div>
+
+                    <input
+                        type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        placeholder="Digite sua mensagem"
+                    />
+                    <button className="btn btn-secondary" onClick={enviarMensagem}>
+                        Enviar
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
