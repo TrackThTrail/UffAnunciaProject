@@ -21,12 +21,19 @@ const ItemDetail = () => {
 
     if (!item) return <p>Carregando...</p>;
 
+    const iniciarChat = () => {
+        console.log('aa'); // Redireciona para a rota de chat com o vendedor
+    };
+
     return (
         <div className="container mt-4">
             <h1>{item.nome}</h1>
             <p><strong>Categoria:</strong> {item.categoria}</p>
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
+            <button className="btn btn-primary" onClick={iniciarChat}>
+                Iniciar Chat com dono do Anúncio
+            </button>
         </div>
     );
 };
