@@ -6,6 +6,13 @@ const CadastroAnuncio = () => {
     const [categoria, setCategoria] = useState('');
     const [valor, setValor] = useState('');
 
+    const categorias = [
+        { value: 'academico', label: 'Acadêmico' },
+        { value: 'alimentos', label: 'Alimentos' },
+        { value: 'moradia', label: 'Moradia' },
+        { value: 'outros', label: 'Outros' }
+    ];
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newAnuncio = { nome, categoria, valor };
@@ -26,7 +33,19 @@ const CadastroAnuncio = () => {
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Categoria:</label>
-                    <input type="text" className="form-control" value={categoria} onChange={(e) => setCategoria(e.target.value)} required />
+                    <select
+                        className="form-control"
+                        value={categoria}
+                        onChange={(e) => setCategoria(e.target.value)}
+                        required
+                    >
+                        <option value="" disabled>Selecione uma categoria</option>
+                        {categorias.map((cat) => (
+                            <option key={cat.value} value={cat.value}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Valor:</label>

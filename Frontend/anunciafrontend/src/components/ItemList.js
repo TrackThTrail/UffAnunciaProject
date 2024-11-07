@@ -6,8 +6,12 @@ const ItemList = () => {
 
     useEffect(() => {
         const fetchItems = async () => {
-            const response = await axios.get('http://localhost:8000/api/anuncios/');
-            setItens(response.data);
+            try {
+                const response = await axios.get('http://localhost:8000/api/anuncios/');
+                setItens(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar anúncios:", error);
+            }
         };
 
         fetchItems();
@@ -19,7 +23,9 @@ const ItemList = () => {
             <ul className="list-group">
                 {itens.map(item => (
                     <li key={item.id} className="list-group-item">
-                        {item.nome}
+                        <h5>{item.nome}</h5>
+                        <p>Categoria: {item.categoria}</p>
+                        <p>Valor: R$ {item.valor}</p>
                     </li>
                 ))}
             </ul>

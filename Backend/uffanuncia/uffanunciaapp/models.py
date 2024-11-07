@@ -12,8 +12,20 @@ class Usuario(models.Model):
         return self.nome
 
 class Anuncio(models.Model):
+
+    class Categoria(models.TextChoices):
+        ACADEMICO = 'academico', 'Acadêmico'
+        ALIMENTOS = 'alimentos', 'Alimentos'
+        MORADIA = 'moradia', 'Moraia'
+        OUTROS = 'outros', 'Outros'
+
+
     nome = models.CharField(max_length=100)
-    categoria = models.CharField(max_length=100)
+    categoria = models.CharField(
+        max_length=10,
+        choices=Categoria.choices,
+        default=Categoria.OUTROS
+    )
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='anuncios')
 
