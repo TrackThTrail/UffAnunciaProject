@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Item
+from .models import Anuncio
 
-class ItemSerializer(serializers.ModelSerializer):
+class AnuncioSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Item
+        model = Anuncio
         fields = '__all__'
