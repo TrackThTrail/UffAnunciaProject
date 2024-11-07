@@ -17,6 +17,9 @@ const NavBar = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/cadastrar">Cadastrar Anúncio</Link>
                         </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/meus_anuncios">Meus Anúncios</Link>
+                        </li>
                     </ul>
                 </div>
             </div>
