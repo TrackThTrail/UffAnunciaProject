@@ -13,4 +13,5 @@ router.register(r'chatmessages', ChatMessageView)
 urlpatterns = [
     path('', include(router.urls)),
     path('meus_anuncios/', views.meus_anuncios, name='meus_anuncios'),
+    path('cadastro/', views.cadastro, name='cadastro'),
 ]

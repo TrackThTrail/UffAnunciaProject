@@ -14,10 +14,19 @@ const CadastroAnuncio = () => {
     ];
 
     const handleSubmit = async (e) => {
+        debugger;
         e.preventDefault();
         const newAnuncio = { nome, categoria, valor };
-
-        await axios.post('http://localhost:8000/api/anuncios/', newAnuncio);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert('Token JWT não encontrado!');
+            return;
+        }
+        await axios.post('http://localhost:8000/api/anuncios/', newAnuncio, {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
+            }
+        });
         setNome('');
         setCategoria('');
         setValor('');

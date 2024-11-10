@@ -1,7 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const NavBar = () => {
+const NavBar = ({ setIsAuthenticated }) => {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+        navigate('/');
+    };
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
@@ -12,7 +21,7 @@ const NavBar = () => {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/">Lista de Anúncios</Link>
+                            <Link className="nav-link" to="/anuncios">Lista de Anúncios</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/cadastrar">Cadastrar Anúncio</Link>
@@ -20,6 +29,7 @@ const NavBar = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/meus_anuncios">Meus Anúncios</Link>
                         </li>
+                        <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
                     </ul>
                 </div>
             </div>

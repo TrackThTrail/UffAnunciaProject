@@ -9,7 +9,16 @@ const ItemList = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/anuncios/');
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    alert('Token JWT não encontrado!');
+                    return;
+                }
+                const response = await axios.get('http://localhost:8000/api/anuncios/', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
+                    }
+                });
                 setItens(response.data);
             } catch (error) {
                 console.error("Erro ao buscar anúncios:", error);

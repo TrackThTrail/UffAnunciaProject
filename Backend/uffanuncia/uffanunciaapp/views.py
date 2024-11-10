@@ -1,23 +1,28 @@
 from django.http import HttpResponse
 from rest_framework.views import APIView
-from rest_framework import viewsets
-from .models import Anuncio, Usuario, ChatMessage
+from rest_framework import viewsets, status
+from .models import Anuncio, ChatMessage
 from .serializers import AnuncioSerializer, ChatMessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import Anuncio
 from .serializers import AnuncioSerializer
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 class AnuncioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    
     queryset = Anuncio.objects.all()
     serializer_class = AnuncioSerializer
 
     def create(self, request):
+        import ipdb; ipdb.set_trace()
         nome = request.data.get('nome')
         categoria = request.data.get('categoria')
         valor = request.data.get('valor')
-        usuario = Usuario.objects.first()
+        usuario = request.user
         anuncio = Anuncio(nome=nome, categoria=categoria, valor=valor, usuario=usuario)
         anuncio.save()
         return HttpResponse(status=200)
@@ -31,6 +36,17 @@ def meus_anuncios(request):
     anuncios = Anuncio.objects.filter(usuario=user)
     serializer = AnuncioSerializer(anuncios, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def cadastro(request):
+    import ipdb; ipdb.set_trace()
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response({'error': 'Please provide username and password'}, status=status.HTTP_400_BAD_REQUEST)
+    user = User.objects.create(username=username, password=make_password(password))
+    return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
 
 class ChatMessageView(viewsets.ModelViewSet):
