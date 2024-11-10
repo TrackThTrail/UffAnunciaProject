@@ -12,9 +12,9 @@ function Login({ setIsAuthenticated }) {
             const response = await axios.post('http://localhost:8000/api/token/', { username, password });
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
-            alert('Login bem-sucedido!');
             setIsAuthenticated(true);
             navigate('/anuncios')
+            alert('Login bem-sucedido!');
         } catch (error) {
             console.error('Erro ao fazer login', error);
             alert('Credenciais inválidas!');

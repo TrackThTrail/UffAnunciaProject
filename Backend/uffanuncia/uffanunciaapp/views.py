@@ -18,7 +18,6 @@ class AnuncioViewSet(viewsets.ModelViewSet):
     serializer_class = AnuncioSerializer
 
     def create(self, request):
-        import ipdb; ipdb.set_trace()
         nome = request.data.get('nome')
         categoria = request.data.get('categoria')
         valor = request.data.get('valor')
@@ -32,20 +31,18 @@ class AnuncioViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def meus_anuncios(request):
-    user = 1
-    anuncios = Anuncio.objects.filter(usuario=user)
+    anuncios = Anuncio.objects.filter(usuario=request.user)
     serializer = AnuncioSerializer(anuncios, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
 def cadastro(request):
-    import ipdb; ipdb.set_trace()
     username = request.data.get('username')
     password = request.data.get('password')
 
     if not username or not password:
         return Response({'error': 'Please provide username and password'}, status=status.HTTP_400_BAD_REQUEST)
-    user = User.objects.create(username=username, password=make_password(password))
+    User.objects.create(username=username, password=make_password(password))
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
 
@@ -58,7 +55,6 @@ class ChatMessageView(viewsets.ModelViewSet):
         #TODO verificar se ja tem um chat daqueles 2 usuarios com aquele anuncio.
         #se ja tiver, adiciona a mensagem naquele chat, senao, cria um chat pra aqueles 2 usuarios e pra aquele anuncio e
         #vai adicionando as mensagens la
-        # import ipdb; ipdb.set_trace()
         # Obtém os dados da requisição
         message_data = request.data
         sender = message_data.get('sender')
