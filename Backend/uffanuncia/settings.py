@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-REACT_APP_DIR = BASE_DIR.parent / 'Frontend' / 'anunciafrontend' / 'build'
+REACT_APP_DIR = os.path.join(BASE_DIR, 'Frontend/anunciafrontend/build')
 
 
 # Quick-start development settings - unsuitable for production
@@ -73,7 +73,7 @@ MIDDLEWARE = [
 ]
 
 STATICFILES_DIRS = [
-    REACT_APP_DIR / 'static',
+    os.path.join(REACT_APP_DIR, 'static'),
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -85,7 +85,7 @@ ROOT_URLCONF = 'uffanuncia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(REACT_APP_DIR)],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
