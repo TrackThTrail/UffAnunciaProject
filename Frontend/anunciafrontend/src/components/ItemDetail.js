@@ -8,10 +8,20 @@ const ItemDetail = () => {
     const [ws, setWs] = useState(null);
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
+    const [loggedUser, setLoggedUser] = useState('');
+    const [chat, setChat] = useState('');
 
     useEffect(() => {
         const fetchItem = async () => {
             try {
+                const user = await axios.get('http://localhost:8000/api/get_logged_in_user/', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                setLoggedUser(user.data)
+                
+
                 const token = localStorage.getItem('accessToken');
                 if (!token) {
                     alert('Token JWT não encontrado!');
@@ -40,8 +50,20 @@ const ItemDetail = () => {
         };
     }, [ws]);
 
-    const iniciarChat = () => {
-        debugger;
+    const iniciarChat = async () => {
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.post('http://localhost:8000/api/chats/iniciar_chat/', {
+            usuarioDono: item.usuario,  // Pode ser o nome do usuário ou outro identificador
+            usuarioVisitante: loggedUser,
+            anuncio: id, // Id do item do chat
+
+        },{
+            headers: {
+                Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
+            }
+        });
+
+        setChat(response.data.chat_id);
         const socket = new WebSocket('ws://localhost:8001');
     
         socket.onopen = () => {
@@ -74,16 +96,19 @@ const ItemDetail = () => {
     };
 
     const enviarMensagem = async () => {
+
         if (ws && messageInput) {
             // Enviar mensagem através do WebSocket
-            ws.send(JSON.stringify({ message: messageInput }));
+            const roomId = chat;
+            setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
+            ws.send(JSON.stringify({ message: messageInput, roomId: roomId}));
     
             // Enviar a mensagem para o Django para salvar no banco
             try {
-                await axios.post('http://localhost:8000/api/chatmessages/', {
-                    sender: 'Usuário',  // Pode ser o nome do usuário ou outro identificador
-                    message: messageInput,
-                    item_id: id, // Id do item do chat
+                await axios.post('http://localhost:8000/api/mensagens/', {
+                    chat: chat,  // Pode ser o nome do usuário ou outro identificador
+                    content: messageInput,
+                    usuario: loggedUser, // Id do item do chat
                 });
                 setMessageInput(''); // Limpar o campo de input
             } catch (error) {
@@ -110,7 +135,7 @@ const ItemDetail = () => {
                     <h3>Chat:</h3>
                     <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
                         {messages.map((msg, index) => (
-                            <div key={index}>{msg.message}</div>
+                            <div key={index}>{msg.content}</div>
                         ))}
                     </div>
 

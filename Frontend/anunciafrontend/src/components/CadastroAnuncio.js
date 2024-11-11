@@ -14,7 +14,6 @@ const CadastroAnuncio = () => {
     ];
 
     const handleSubmit = async (e) => {
-        debugger;
         e.preventDefault();
         const newAnuncio = { nome, categoria, valor };
         const token = localStorage.getItem('accessToken');

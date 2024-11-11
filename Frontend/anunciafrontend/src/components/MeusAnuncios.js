@@ -8,11 +8,17 @@ const MeusAnuncios = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+
         const fetchMeusAnuncios = async () => {
             try {
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    alert('Token JWT não encontrado!');
+                    return;
+                }
                 const response = await axios.get('http://localhost:8000/api/meus_anuncios/', {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}` // Envia o token de autenticação
+                        Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
                 });
                 setMeusAnuncios(response.data);
@@ -42,6 +48,11 @@ const MeusAnuncios = () => {
                             <h5>{item.nome}</h5>
                             <p>Categoria: {item.categoria}</p>
                             <p>Valor: R$ {item.valor}</p>
+                            <div className="mt-4">
+                                <button className="btn btn-info" onClick={() => navigate(`/meus-chats?id=${item.id}`)}>
+                                    Ir para Meus Chats
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>
