@@ -20,6 +20,4 @@ urlpatterns = [
     path('meus_anuncios/', views.meus_anuncios, name='meus_anuncios'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('get_logged_in_user/', views.get_logged_in_user),
-    path('', serve_react)
-    
 ]
