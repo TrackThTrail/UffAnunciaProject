@@ -70,7 +70,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
-REACT_APP_DIR = os.path.join(BASE_DIR, 'Frontend/anunciafrontend/build')
+REACT_APP_DIR = os.path.join(BASE_DIR, '../../Frontend/anunciafrontend/build')
 
 STATICFILES_DIRS = [
     os.path.join(REACT_APP_DIR, 'static'),
