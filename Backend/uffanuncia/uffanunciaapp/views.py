@@ -11,6 +11,10 @@ from .serializers import AnuncioSerializer, ChatSerializer
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'index.html')
 
 class AnuncioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
