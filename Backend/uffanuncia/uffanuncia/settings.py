@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-REACT_APP_DIR = BASE_DIR.parent / 'Frontend' / 'anunciafrontend' / 'build'
+REACT_APP_DIR = BASE_DIR.parent.parent / 'Frontend' / 'anunciafrontend' / 'build'
 
 
 # Quick-start development settings - unsuitable for production
