@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import apiUrl from './apiConfig';
 
 const CadastroAnuncio = () => {
     const [nome, setNome] = useState('');
@@ -21,7 +22,7 @@ const CadastroAnuncio = () => {
             alert('Token JWT não encontrado!');
             return;
         }
-        await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/anuncios/', newAnuncio, {
+        await axios.post(`${apiUrl}/api/anuncios/`, newAnuncio, {
             headers: {
                 Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
             }

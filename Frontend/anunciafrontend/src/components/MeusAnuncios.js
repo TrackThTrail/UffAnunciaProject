@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import apiUrl from './apiConfig';
 
 
 const MeusAnuncios = () => {
@@ -16,7 +17,7 @@ const MeusAnuncios = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
-                const response = await axios.get('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/meus_anuncios/', {
+                const response = await axios.get(`${apiUrl}/api/meus_anuncios/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }

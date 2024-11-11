@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import {useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import apiUrl from './apiConfig';
 
 const MeusChats = () => {
     const [chats, setChats] = useState([]);
@@ -15,7 +16,7 @@ const MeusChats = () => {
                     return;
                 }
 
-                const response = await axios.get('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/chats/meus_chats/', {
+                const response = await axios.get(`${apiUrl}/api/chats/meus_chats/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }

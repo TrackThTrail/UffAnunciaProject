@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import apiUrl from './apiConfig';
 
 function Login({ setIsAuthenticated }) {
     const [username, setUsername] = useState('');
@@ -9,7 +10,7 @@ function Login({ setIsAuthenticated }) {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/token/', { username, password });
+            const response = await axios.post(`${apiUrl}/api/token/`, { username, password });
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
             setIsAuthenticated(true);

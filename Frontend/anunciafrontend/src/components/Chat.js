@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import apiUrl from './apiConfig';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
@@ -31,7 +32,7 @@ const Chat = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
-                const response = await axios.get(`https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/chats/${chatId}/load_chat_data/`, {
+                const response = await axios.get(`${apiUrl}/api/chats/${chatId}/load_chat_data/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
@@ -85,7 +86,7 @@ const Chat = () => {
             setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
             // Enviar a mensagem para salvar no Django
             try {
-                await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/mensagens/', {
+                await axios.post(`${apiUrl}/api/mensagens/`, {
                     chat: chatId,
                     content: messageInput,
                     usuario: usuarioDono,
