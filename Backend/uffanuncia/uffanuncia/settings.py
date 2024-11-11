@@ -15,6 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+REACT_APP_DIR = BASE_DIR.parent / 'Frontend' / 'anunciafrontend' / 'build'
 
 
 # Quick-start development settings - unsuitable for production
@@ -70,10 +71,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
-REACT_APP_DIR = os.path.join(BASE_DIR, '../../Frontend/anunciafrontend/build')
 
 STATICFILES_DIRS = [
-    os.path.join(REACT_APP_DIR, 'static'),
+    REACT_APP_DIR / 'static',
 ]
 
 CORS_ALLOWED_ORIGINS = [
