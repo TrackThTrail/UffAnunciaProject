@@ -16,7 +16,7 @@ const MeusAnuncios = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
-                const response = await axios.get('http://localhost:8000/api/meus_anuncios/', {
+                const response = await axios.get('http://https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/meus_anuncios/', {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }

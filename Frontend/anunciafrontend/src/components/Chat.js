@@ -31,7 +31,7 @@ const Chat = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
-                const response = await axios.get(`http://localhost:8000/api/chats/${chatId}/load_chat_data/`, {
+                const response = await axios.get(`https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/chats/${chatId}/load_chat_data/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
@@ -85,7 +85,7 @@ const Chat = () => {
             setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
             // Enviar a mensagem para salvar no Django
             try {
-                await axios.post('http://localhost:8000/api/mensagens/', {
+                await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/mensagens/', {
                     chat: chatId,
                     content: messageInput,
                     usuario: usuarioDono,

@@ -10,7 +10,7 @@ function Register() {
 
     const handleRegister = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/api/cadastro/', { username, email, password });
+            const response = await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/cadastro/', { username, email, password });
             if (response.status === 201) {
                 alert('Cadastro realizado com sucesso!');
                 navigate('/');

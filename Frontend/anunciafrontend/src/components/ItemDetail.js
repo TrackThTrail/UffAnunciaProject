@@ -14,7 +14,7 @@ const ItemDetail = () => {
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                const user = await axios.get('http://localhost:8000/api/get_logged_in_user/', {
+                const user = await axios.get('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/get_logged_in_user/', {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                     }
@@ -27,7 +27,7 @@ const ItemDetail = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
-                const response = await axios.get(`http://localhost:8000/api/anuncios/${id}/`, {
+                const response = await axios.get(`https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/anuncios/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
@@ -52,7 +52,7 @@ const ItemDetail = () => {
 
     const iniciarChat = async () => {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.post('http://localhost:8000/api/chats/iniciar_chat/', {
+        const response = await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/chats/iniciar_chat/', {
             usuarioDono: item.usuario,  // Pode ser o nome do usuário ou outro identificador
             usuarioVisitante: loggedUser,
             anuncio: id, // Id do item do chat
@@ -105,7 +105,7 @@ const ItemDetail = () => {
     
             // Enviar a mensagem para o Django para salvar no banco
             try {
-                await axios.post('http://localhost:8000/api/mensagens/', {
+                await axios.post('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/mensagens/', {
                     chat: chat,  // Pode ser o nome do usuário ou outro identificador
                     content: messageInput,
                     usuario: loggedUser, // Id do item do chat

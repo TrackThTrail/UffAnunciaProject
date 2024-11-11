@@ -15,7 +15,7 @@ const MeusChats = () => {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8000/api/chats/meus_chats/', {
+                const response = await axios.get('https://anunciauffheroku-b998b85f5dfd.herokuapp.com/api/chats/meus_chats/', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
