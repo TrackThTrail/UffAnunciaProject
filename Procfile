@@ -1,1 +1,1 @@
-web: gunicorn backend.wsgi:application
+web: cd Backend && gunicorn uffanuncia.wsgi --log-file -
