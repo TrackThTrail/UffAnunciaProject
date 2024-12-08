@@ -37,6 +37,7 @@ const App = () => {
                     <Route path="/anuncios/:id" element={<ItemDetail />} />
                     <Route path="/meus_anuncios" element={<MeusAnuncios />} />
                     <Route path="/cadastro" element={<Cadastro />} />
+                    <Route path="/editar-anuncio/:id" element={<CadastroAnuncio />} />
                     <Route path="/meus-chats" element={<MeusChats />} />
                     <Route path="/chat" element={<Chat />} />
                 </Routes>

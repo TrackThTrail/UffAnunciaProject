@@ -53,6 +53,12 @@ const MeusAnuncios = () => {
                                 <button className="btn btn-info" onClick={() => navigate(`/meus-chats?id=${item.id}`)}>
                                     Ir para Meus Chats
                                 </button>
+                                {/* Botão de Edição */}
+                                <button 
+                                    className="btn btn-warning ms-2" 
+                                    onClick={() => navigate(`/editar-anuncio/${item.id}`)}>
+                                    Editar
+                                </button>
                             </div>
                         </li>
                     ))}

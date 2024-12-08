@@ -46,7 +46,7 @@ const MeusChats = () => {
                     {chats.map(chat => (
                         <li key={chat.id} className="list-group-item">
                             <h5>Chat com: {chat.usuario_visitante}</h5>
-                            <p>Última mensagem: {chat.ultima_mensagem}</p>
+                            {/* <p>Última mensagem: {chat.ultima_mensagem}</p> */}
                             <button
                                 className="btn btn-primary"
                                 onClick={() => iniciarChatOwner(chat.id, chat.usuario_visitante)}

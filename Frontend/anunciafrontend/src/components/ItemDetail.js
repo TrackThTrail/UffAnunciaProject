@@ -40,13 +40,33 @@ const ItemDetail = () => {
         };
 
         fetchItem();
+
+        const loadChatInfo = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    alert('Token JWT não encontrado!');
+                    return;
+                }
+                const response = await axios.get(`${apiUrl}/api/chats/${id}/get_chat_messages/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
+                    }
+                });
+                debugger;
+                setMessages(response.data.mensagens);
+            } catch (error) {
+                console.error("Erro ao buscar mensagens:", error);
+            }
+        };
+        loadChatInfo();
     }, [id]);
 
     useEffect(() => {
         // Limpeza do WebSocket quando o componente for desmontado
         return () => {
             if (ws) {
-                ws.close();
+                // ws.close();
             }
         };
     }, [ws]);
@@ -136,7 +156,12 @@ const ItemDetail = () => {
                     <h3>Chat:</h3>
                     <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
                         {messages.map((msg, index) => (
-                            <div key={index}>{msg.content}</div>
+                            <div className="card mb-3" key={index}>
+                                <div className="card-body">
+                                    <h5 className="card-title">{msg.usuario.username}</h5>
+                                    <p className="card-text">{msg.content}</p>
+                                </div>
+                            </div>
                         ))}
                     </div>
 

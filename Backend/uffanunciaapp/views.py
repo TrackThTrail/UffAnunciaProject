@@ -14,28 +14,6 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 
-class AnuncioViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    
-    queryset = Anuncio.objects.all()
-    serializer_class = AnuncioSerializer
-    
-    def list(self, request):
-        qs = Anuncio.objects.exclude(usuario=request.user)
-        serializer = AnuncioSerializer(qs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        nome = request.data.get('nome')
-        categoria = request.data.get('categoria')
-        valor = request.data.get('valor')
-        usuario = request.user
-        anuncio = Anuncio(nome=nome, categoria=categoria, valor=valor, usuario=usuario)
-        anuncio.save()
-        return HttpResponse(status=200)
-    
-    def delete(request):
-        return HttpResponse("Olá, mundo!")
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -59,6 +37,37 @@ def cadastro(request):
         return Response({'error': 'Please provide username and password'}, status=status.HTTP_400_BAD_REQUEST)
     User.objects.create(username=username, password=make_password(password))
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+
+
+class AnuncioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    
+    queryset = Anuncio.objects.all()
+    serializer_class = AnuncioSerializer
+    
+    def list(self, request):
+        qs = Anuncio.objects.exclude(usuario=request.user)
+        serializer = AnuncioSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        nome = request.data.get('nome')
+        categoria = request.data.get('categoria')
+        valor = request.data.get('valor')
+        usuario = request.user
+        anuncio = Anuncio(nome=nome, categoria=categoria, valor=valor, usuario=usuario)
+        anuncio.save()
+        return HttpResponse(status=200)
+    
+    def delete(request):
+        return HttpResponse("Olá, mundo!")
+    
+
+    @action(detail=False, methods=['POST'])
+    def get_anuncio(self, request):
+        anuncio = Anuncio.objects.filter(pk=request.data.get('id'))
+        serializer = AnuncioSerializer(anuncio, many=True)
+        return Response(serializer.data)
 
 
 class ChatView(viewsets.ModelViewSet):
@@ -106,6 +115,19 @@ class ChatView(viewsets.ModelViewSet):
                 'mensagens': mensagem_serializer.data
             }, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=['GET'])
+    def get_chat_messages(self, request, pk=None):
+        usuario_visitante = request.user
+        anuncio = Anuncio.objects.get(pk=pk)
+        chat = Chat.objects.get(usuario_visitante=usuario_visitante, anuncio=anuncio)
+        mensagens = chat.mensagens.all()
+        chat_serializer = self.get_serializer(chat)
+        mensagem_serializer = MensagemSerializer(mensagens, many=True)
+        return Response({
+            'chat': chat_serializer.data,
+            'mensagens': mensagem_serializer.data
+        }, status=status.HTTP_200_OK)
+
 
     @action(detail=False, methods=['GET'])
     def meus_chats(self, request):
