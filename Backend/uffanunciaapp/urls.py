@@ -12,6 +12,7 @@ router.register(r'anuncios', AnuncioViewSet)
 router.register(r'mensagens', MensagemView)
 router.register(r'chats', ChatView)
 
+
 def serve_react(request):
     return render(request, 'index.html')
 
