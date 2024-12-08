@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import apiUrl from './apiConfig';
+import { useNavigate } from 'react-router-dom';
 
 const CadastroAnuncio = () => {
     const [nome, setNome] = useState('');
@@ -13,6 +14,8 @@ const CadastroAnuncio = () => {
         { value: 'moradia', label: 'Moradia' },
         { value: 'outros', label: 'Outros' }
     ];
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,10 +33,20 @@ const CadastroAnuncio = () => {
         setNome('');
         setCategoria('');
         setValor('');
+        navigate('/anuncios');
     };
 
     return (
-        <div className="container mt-4">
+        <div
+            className="container mt-4"
+            style={{
+                backgroundImage: `url('../background.png')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                height: '100vh',
+                width: '100%',
+            }}
+            >
             <h1>Cadastrar Anúncio</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">

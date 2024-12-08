@@ -19,6 +19,11 @@ class AnuncioViewSet(viewsets.ModelViewSet):
     
     queryset = Anuncio.objects.all()
     serializer_class = AnuncioSerializer
+    
+    def list(self, request):
+        qs = Anuncio.objects.exclude(usuario=request.user)
+        serializer = AnuncioSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         nome = request.data.get('nome')

@@ -6,7 +6,7 @@ import apiUrl from './apiConfig';
 const ItemDetail = () => {
     const { id } = useParams(); // Obtém o ID da URL
     const [item, setItem] = useState(null);
-    const [ws, setWs] = useState(null);
+    const [ws, setWs] = useState(false);
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
     const [loggedUser, setLoggedUser] = useState('');
@@ -65,35 +65,35 @@ const ItemDetail = () => {
         });
 
         setChat(response.data.chat_id);
-        const socket = new WebSocket('ws://localhost:8001');
+        // const socket = new WebSocket('ws://localhost:8001');
     
-        socket.onopen = () => {
-            console.log('Conexão WebSocket estabelecida.');
-        };
+        // socket.onopen = () => {
+        //     console.log('Conexão WebSocket estabelecida.');
+        // };
     
-        socket.onmessage = (event) => {
-            const newMessage = JSON.parse(event.data);
-            console.log('Mensagem recebida:', newMessage);
-            setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
-        };
+        // socket.onmessage = (event) => {
+        //     const newMessage = JSON.parse(event.data);
+        //     console.log('Mensagem recebida:', newMessage);
+        //     setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
+        // };
     
-        socket.onerror = (event) => {
-            // Se for um erro de evento, imprima as informações completas
-            if (event && event.message) {
-                console.error('Erro na conexão WebSocket:', event.message);
-                alert(`Erro na conexão WebSocket: ${event.message}`);
-            } else {
-                // Caso o erro seja um objeto Error (eventualmente)
-                console.error('Erro na conexão WebSocket:', event);
-                alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
-            }
-        };
+        // socket.onerror = (event) => {
+        //     // Se for um erro de evento, imprima as informações completas
+        //     if (event && event.message) {
+        //         console.error('Erro na conexão WebSocket:', event.message);
+        //         alert(`Erro na conexão WebSocket: ${event.message}`);
+        //     } else {
+        //         // Caso o erro seja um objeto Error (eventualmente)
+        //         console.error('Erro na conexão WebSocket:', event);
+        //         alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
+        //     }
+        // };
     
-        socket.onclose = () => {
-            console.log('Conexão WebSocket fechada.');
-        };
+        // socket.onclose = () => {
+        //     console.log('Conexão WebSocket fechada.');
+        // };
     
-        setWs(socket);  // Atualiza o estado do WebSocket
+        setWs(true);  // Atualiza o estado do WebSocket
     };
 
     const enviarMensagem = async () => {
@@ -102,7 +102,7 @@ const ItemDetail = () => {
             // Enviar mensagem através do WebSocket
             const roomId = chat;
             setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
-            ws.send(JSON.stringify({ message: messageInput, roomId: roomId}));
+            // ws.send(JSON.stringify({ message: messageInput, roomId: roomId}));
     
             // Enviar a mensagem para o Django para salvar no banco
             try {
