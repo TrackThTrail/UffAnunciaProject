@@ -11,6 +11,8 @@ function Register() {
 
     const handleRegister = async () => {
         try {
+            debugger;
+            console.log(apiUrl);
             const response = await axios.post(`${apiUrl}/api/cadastro/`, { username, email, password });
             if (response.status === 201) {
                 alert('Cadastro realizado com sucesso!');

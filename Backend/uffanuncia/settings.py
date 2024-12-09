@@ -77,7 +77,8 @@ STATICFILES_DIRS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Permita o frontend
+    "http://localhost:3000",
+    "https://fuzzy-trout-gw75997j5rxhjq5-3000.app.github.dev"
 ]
 
 ROOT_URLCONF = 'uffanuncia.urls'
