@@ -11,6 +11,8 @@ const ItemDetail = () => {
     const [messageInput, setMessageInput] = useState('');
     const [loggedUser, setLoggedUser] = useState('');
     const [chat, setChat] = useState('');
+    const [rating, setRating] = useState(1);
+    const [currentEvaluation, setCurrentEvaluation] = useState(null);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -28,12 +30,21 @@ const ItemDetail = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
+
                 const response = await axios.get(`${apiUrl}/api/anuncios/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
                 });
                 setItem(response.data);
+
+                const evalResponse = await axios.get(`${apiUrl}/api/avaliacoes/get_current_evaluation/`, {
+                    params: { anuncio_id: id },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                setCurrentEvaluation(evalResponse.data);
             } catch (error) {
                 console.error("Erro ao buscar o anúncio:", error);
             }
@@ -70,6 +81,8 @@ const ItemDetail = () => {
             }
         };
     }, [ws]);
+
+    
 
     const iniciarChat = async () => {
         const token = localStorage.getItem('accessToken');
@@ -138,6 +151,29 @@ const ItemDetail = () => {
         }
     };
 
+    const handleRatingSubmit = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('Token JWT não encontrado!');
+                return;
+            }
+            await axios.post(
+                `${apiUrl}/api/anuncios/${id}/avaliar/`,
+                { rating }, // Dados enviados ao backend
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                    }
+                }
+            );
+            alert('Avaliação enviada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao enviar avaliação:', error);
+            alert('Não foi possível enviar a avaliação.');
+        }
+    };
+
     if (!item) return <p>Carregando...</p>;
 
     return (
@@ -146,36 +182,47 @@ const ItemDetail = () => {
             <p><strong>Categoria:</strong> {item.categoria}</p>
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
-            
+
             <button className="btn btn-primary" onClick={iniciarChat}>
                 Iniciar Chat com dono do Anúncio
             </button>
 
-            {ws && (
-                <div>
-                    <h3>Chat:</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
-                        {messages.map((msg, index) => (
-                            <div className="card mb-3" key={index}>
-                                <div className="card-body">
-                                    <h5 className="card-title">{msg.usuario.username}</h5>
-                                    <p className="card-text">{msg.content}</p>
-                                </div>
-                            </div>
-                        ))}
+            <div className="mt-4">
+                <h3>Avalie este anúncio:</h3>
+                {currentEvaluation ? (
+                    <p>Sua avaliação: {currentEvaluation.nota}</p>
+                ) : (
+                    <div className="d-flex align-items-center">
+                        <select
+                            className="form-select me-2"
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                        >
+                            {[1, 2, 3, 4, 5].map((value) => (
+                                <option key={value} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </select>
+                        <button className="btn btn-success" onClick={handleRatingSubmit}>
+                            Avaliar
+                        </button>
                     </div>
+                )}
+            </div>
 
-                    <input
-                        type="text"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        placeholder="Digite sua mensagem"
-                    />
-                    <button className="btn btn-secondary" onClick={enviarMensagem}>
-                        Enviar
-                    </button>
-                </div>
-            )}
+            <div className="mt-4">
+                <h3>Mensagens do Chat:</h3>
+                {messages.length > 0 ? (
+                    <ul>
+                        {messages.map((message, index) => (
+                            <li key={index}>{message.content}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Sem mensagens ainda.</p>
+                )}
+            </div>
         </div>
     );
 };
