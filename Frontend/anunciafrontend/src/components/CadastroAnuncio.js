@@ -57,7 +57,7 @@ const CadastroAnuncio = () => {
         try {
             if (id) {
                 // Se estiver editando, fazer PUT
-                await axios.put(`${apiUrl}/api/anuncios/${id}`, anuncio, {
+                await axios.put(`${apiUrl}/api/anuncios/${id}/`, anuncio, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
