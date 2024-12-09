@@ -38,7 +38,7 @@ const ItemDetail = () => {
                 });
                 setItem(response.data);
 
-                const evalResponse = await axios.get(`${apiUrl}/api/avaliacoes/get_current_evaluation/`, {
+                const evalResponse = await axios.get(`${apiUrl}/api/avaliacoes/get_avaliacao/`, {
                     params: { anuncio_id: id },
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -151,7 +151,7 @@ const ItemDetail = () => {
         }
     };
 
-    const handleRatingSubmit = async () => {
+    const enviarAvaliacao = async () => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
@@ -159,11 +159,11 @@ const ItemDetail = () => {
                 return;
             }
             await axios.post(
-                `${apiUrl}/api/anuncios/${id}/avaliar/`,
-                { rating }, // Dados enviados ao backend
+                `${apiUrl}/api/avaliacoes/${id}/avaliar/`,
+                { rating }, 
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`, 
                     }
                 }
             );
@@ -204,7 +204,7 @@ const ItemDetail = () => {
                                 </option>
                             ))}
                         </select>
-                        <button className="btn btn-success" onClick={handleRatingSubmit}>
+                        <button className="btn btn-success" onClick={enviarAvaliacao}>
                             Avaliar
                         </button>
                     </div>

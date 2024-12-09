@@ -45,7 +45,7 @@ class Mensagem(models.Model):
         verbose_name_plural = 'Mensagens'
 
 class Avaliacao(models.Model):
-    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='avaliacoes')
+    #chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='avaliacoes')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='avaliacoes')
     anuncio = models.ForeignKey(Anuncio, on_delete=models.CASCADE, related_name='avaliacoes')
     nota = models.FloatField()

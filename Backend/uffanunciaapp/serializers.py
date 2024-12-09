@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Anuncio, Mensagem, Chat, User
+from .models import *
 
 class AnuncioSerializer(serializers.ModelSerializer):
     usuario = serializers.StringRelatedField()
@@ -25,4 +25,9 @@ class MensagemSerializer(serializers.ModelSerializer):
     usuario = UserSerializer()
     class Meta:
         model = Mensagem
+        fields = '__all__'
+
+class AvaliacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avaliacao
         fields = '__all__'
