@@ -6,6 +6,7 @@ React
 pip install react-scripts --save  
 pip install django-cors-headers  
 pip install djangorestframework-simplejwt  
+pip install whitenoise
 
 
 ## Setup
@@ -14,7 +15,7 @@ cd Frontend/anunciafrontend
 npm start  
 
 ### Backend (Django)
-cd Backend/uffanuncia  
+cd Backend  
 python manage.py runserver  
 
 ## Arquivos úteis
