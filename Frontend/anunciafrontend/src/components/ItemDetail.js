@@ -15,6 +15,12 @@ const ItemDetail = () => {
     const [currentEvaluation, setCurrentEvaluation] = useState(null);
 
     useEffect(() => {
+        if (currentEvaluation) {
+            setRating(currentEvaluation.nota);  // Set rating based on current evaluation
+        }
+    }, [currentEvaluation]);
+
+    useEffect(() => {
         const fetchItem = async () => {
             try {
                 const user = await axios.get(`${apiUrl}/api/get_logged_in_user/`, {
@@ -83,7 +89,6 @@ const ItemDetail = () => {
     }, [ws]);
 
     
-
     const iniciarChat = async () => {
         const token = localStorage.getItem('accessToken');
         const response = await axios.post(`${apiUrl}/api/chats/iniciar_chat/`, {
@@ -174,6 +179,10 @@ const ItemDetail = () => {
         }
     };
 
+    const handleStarClick = (index) => {
+        setRating(index + 1);  // Set rating to the clicked star
+    };
+
     if (!item) return <p>Carregando...</p>;
 
     return (
@@ -183,27 +192,39 @@ const ItemDetail = () => {
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
 
-            <button className="btn btn-primary" onClick={iniciarChat}>
-                Iniciar Chat com dono do Anúncio
-            </button>
-
             <div className="mt-4">
-                <h3>Avalie este anúncio:</h3>
+                <h3>{currentEvaluation ? "Sua avaliação:" : "Avalie este anúncio:"}</h3>
+
                 {currentEvaluation ? (
-                    <p>Sua avaliação: {currentEvaluation.nota}</p>
+                    <div className="d-flex align-items-center">
+                        <div className="star-rating">
+                            {[...Array(5)].map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`star ${index < rating ? 'filled' : ''}`}
+                                    onClick={() => handleStarClick(index)} // Update the rating when a star is clicked
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <button className="btn btn-secondary" onClick={enviarAvaliacao}>
+                            Editar
+                        </button>
+                    </div>
                 ) : (
                     <div className="d-flex align-items-center">
-                        <select
-                            className="form-select me-2"
-                            value={rating}
-                            onChange={(e) => setRating(Number(e.target.value))}
-                        >
-                            {[1, 2, 3, 4, 5].map((value) => (
-                                <option key={value} value={value}>
-                                    {value}
-                                </option>
+                        <div className="star-rating">
+                            {[...Array(5)].map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`star ${index < rating ? 'filled' : ''}`}
+                                    onClick={() => handleStarClick(index)} // Update the rating when a star is clicked
+                                >
+                                    ★
+                                </span>
                             ))}
-                        </select>
+                        </div>
                         <button className="btn btn-success" onClick={enviarAvaliacao}>
                             Avaliar
                         </button>
@@ -211,18 +232,18 @@ const ItemDetail = () => {
                 )}
             </div>
 
-            <div className="mt-4">
-                <h3>Mensagens do Chat:</h3>
-                {messages.length > 0 ? (
-                    <ul>
-                        {messages.map((message, index) => (
-                            <li key={index}>{message.content}</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Sem mensagens ainda.</p>
-                )}
-            </div>
+            <style jsx>{`
+                .star {
+                    font-size: 32px;  /* Increase the size of the stars */
+                    color: #ddd;  /* Empty stars (light gray) */
+                    cursor: pointer;
+                    margin-right: 5px;
+                }
+
+                .star.filled {
+                    color: gold;  /* Filled stars (gold) */
+                }
+            `}</style>
         </div>
     );
 };

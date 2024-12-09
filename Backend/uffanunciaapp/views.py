@@ -217,16 +217,16 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
 
         try:
             anuncio = Anuncio.objects.get(pk=anuncio_id)
-            
-            # Verificar se o usuário já avaliou o anúncio
-            avaliacao_existente = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
-            if avaliacao_existente:
-                return Response(
-                    {"error": "Você já avaliou este anúncio."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
 
-            # Criar nova avaliação
+            avaliacao_existente = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
+
+            if avaliacao_existente:
+                avaliacao_existente.nota = rating
+                avaliacao_existente.save()
+
+                serializer = AvaliacaoSerializer(avaliacao_existente)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
             avaliacao = Avaliacao.objects.create(
                 usuario=usuario,
                 anuncio=anuncio,
