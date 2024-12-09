@@ -20,4 +20,5 @@ urlpatterns = [
     path('meus_anuncios/', views.meus_anuncios, name='meus_anuncios'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('get_logged_in_user/', views.get_logged_in_user),
+    path('meus_anuncios/<int:id>/', views.deletar_anuncio, name='deletar_anuncio'),
 ]
