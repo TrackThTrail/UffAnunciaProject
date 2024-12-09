@@ -56,7 +56,7 @@ const MeusAnuncios = () => {
                                 {/* Botão de Edição */}
                                 <button 
                                     className="btn btn-warning ms-2" 
-                                    onClick={() => navigate(`/editar-anuncio/${item.id}`)}>
+                                    onClick={() => navigate(`/editar-anuncio/${item.id}/`)}>
                                     Editar
                                 </button>
                             </div>
