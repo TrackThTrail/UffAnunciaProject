@@ -34,3 +34,12 @@ views.py : possui classes/funções auxiliares (views) que recebem uma requisiç
 App.js: associa as rotas do app a elementos da interface  
 /components: possui elementos da interface (cada elemento representa uma página)  
 -> Navegação entre elementos feita por 'navigate('/nome-rota-elemento')'  
+
+## Como alterar o banco de dados
+
+Use:
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+Para salvar alterações no banco de dados
