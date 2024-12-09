@@ -2,21 +2,25 @@
 
 ## Dependências
 Django  
-React  
+React 
+```cmd
 pip install react-scripts --save  
 pip install django-cors-headers  
 pip install djangorestframework-simplejwt  
 pip install whitenoise
-
+```
 
 ## Setup
 ### Frontend (React)
+```cmd
 cd Frontend/anunciafrontend  
 npm start  
-
+```
 ### Backend (Django)
+```cmd
 cd Backend  
 python manage.py runserver  
+```
 
 ## Arquivos úteis
 ### Backend/uffanuncia/uffanunciaapp
