@@ -22,6 +22,27 @@ cd Backend
 python manage.py runserver  
 ```
 
+## Workflow
+### Pegar versão mais recente da develop
+```cmd
+git checkout develop
+git pull
+```
+
+### Criar nova branch e colocar no repositório
+```cmd
+git checkout -b [nome da branch ex: FEAT-5]
+git push -u develop [nome da branch que você criou]
+```
+
+### Após desenvolver na branch, fazer o push
+```cmd
+git commit -am "mensagem"
+git push
+```
+
+### Fazer pull request se necessário
+
 ## Arquivos úteis
 ### Backend/uffanuncia/uffanunciaapp
 models.py : classes com as entidades do banco de dados em forma de objetos (Model do Django)  
