@@ -58,26 +58,26 @@ def cadastro(request):
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
 
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def deletar_anuncio(request, id):
-    print(f"Requisição DELETE recebida. ID: {id}, Usuário: {request.user}")
-
     try:
+        # Tenta pegar o anúncio com o id e garantir que pertence ao usuário autenticado
         anuncio = Anuncio.objects.get(id=id, usuario=request.user)
-        anuncio.delete()
-        print(f"Anúncio {id} deletado com sucesso pelo usuário {request.user}")
-        return JsonResponse({"message": "Anúncio deletado com sucesso!"}, status=200)
+        anuncio.delete()  # Deleta o anúncio
+        return Response({"message": "Anúncio deletado com sucesso!"}, status=status.HTTP_204_NO_CONTENT)
+    
     except Anuncio.DoesNotExist:
-        print(f"Anúncio {id} não encontrado ou não pertence ao usuário {request.user}")
+        # Caso o anúncio não exista ou não pertença ao usuário autenticado
         return JsonResponse(
             {"error": "Anúncio não encontrado ou você não tem permissão para deletá-lo!"},
-            status=404
+            status=status.HTTP_404_NOT_FOUND
         )
-    except Exception as e:
-        print(f"Erro inesperado ao tentar deletar o anúncio {id}: {e}")
-        return JsonResponse({"error": "Erro interno no servidor"}, status=500)
     
+    except Exception as e:
+        # Para qualquer outro erro inesperado
+        return JsonResponse({"error": "Erro interno no servidor", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ChatView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
