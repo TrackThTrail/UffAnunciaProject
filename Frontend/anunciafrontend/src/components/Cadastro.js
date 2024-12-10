@@ -11,8 +11,6 @@ function Register() {
 
     const handleRegister = async () => {
         try {
-            debugger;
-            console.log(apiUrl);
             const response = await axios.post(`${apiUrl}/api/cadastro/`, { username, email, password });
             if (response.status === 201) {
                 alert('Cadastro realizado com sucesso!');
@@ -25,11 +23,11 @@ function Register() {
     };
 
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{ width: '22rem' }}>
-                <h2 className="text-center mb-4">Cadastro</h2>
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+            <div className="card shadow-lg p-4" style={{ width: '22rem', borderRadius: '10px' }}>
+                <h2 className="text-center mb-4" style={{ color: '#007bff' }}>Cadastro</h2>
                 <div className="form-group mb-3">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username" className="fw-semibold">Username</label>
                     <input
                         type="text"
                         id="username"
@@ -40,7 +38,7 @@ function Register() {
                     />
                 </div>
                 <div className="form-group mb-3">
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email" className="fw-semibold">Email</label>
                     <input
                         type="email"
                         id="email"
@@ -51,7 +49,7 @@ function Register() {
                     />
                 </div>
                 <div className="form-group mb-3">
-                    <label htmlFor="password">Senha</label>
+                    <label htmlFor="password" className="fw-semibold">Senha</label>
                     <input
                         type="password"
                         id="password"
@@ -61,8 +59,15 @@ function Register() {
                         placeholder="Digite sua senha"
                     />
                 </div>
-                <button className="btn btn-primary w-100" onClick={handleRegister}>
+                <button 
+                    className="btn btn-primary w-100 fw-bold py-2 mb-2" 
+                    onClick={handleRegister}>
                     Cadastrar
+                </button>
+                <button 
+                    className="btn btn-outline-secondary w-100 fw-bold py-2" 
+                    onClick={() => navigate('/')}>
+                    Voltar para o Login
                 </button>
             </div>
         </div>
