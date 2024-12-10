@@ -34,7 +34,8 @@ def cadastro(request):
     password = request.data.get('password')
 
     if not username or not password:
-        return Response({'error': 'Please provide username and password'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Please provide username and password'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
     User.objects.create(username=username, password=make_password(password))
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
@@ -53,13 +54,14 @@ class AnuncioViewSet(viewsets.ModelViewSet):
     def create(self, request):
         nome = request.data.get('nome')
         categoria = request.data.get('categoria')
+        local = request.data.get('local')
         valor = request.data.get('valor')
         usuario = request.user
-        anuncio = Anuncio(nome=nome, categoria=categoria, valor=valor, usuario=usuario)
+        anuncio = Anuncio(nome=nome, categoria=categoria, local = local, valor=valor, usuario=usuario)
         anuncio.save()
         return HttpResponse(status=200)
     
-    def delete(request):
+    def delete(self, request):
         return HttpResponse("Olá, mundo!")
     
 

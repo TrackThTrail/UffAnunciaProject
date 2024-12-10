@@ -48,6 +48,7 @@ const MeusAnuncios = () => {
                         <li key={item.id} className="list-group-item">
                             <h5>{item.nome}</h5>
                             <p>Categoria: {item.categoria}</p>
+                            <p>Local: {item.local}</p>
                             <p>Valor: R$ {item.valor}</p>
                             <div className="mt-4">
                                 <button className="btn btn-info" onClick={() => navigate(`/meus-chats?id=${item.id}`)}>

@@ -1,10 +1,8 @@
+from django.shortcuts import render
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AnuncioViewSet, MensagemView
+from .views import AnuncioViewSet, MensagemView, ChatView
 from . import views
-from .views import MensagemView, ChatView
-from django.shortcuts import render
-
 
 
 router = DefaultRouter()
