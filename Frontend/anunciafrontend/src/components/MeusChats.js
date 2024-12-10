@@ -1,12 +1,12 @@
-// MeusChats.js
 import React, { useEffect, useState } from 'react';
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiUrl from './apiConfig';
 
 const MeusChats = () => {
     const [chats, setChats] = useState([]);
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchChats = async () => {
             try {
@@ -31,31 +31,37 @@ const MeusChats = () => {
     }, []);
 
     const iniciarChatOwner = (chatId) => {
-        navigate(`/chat?id=${chatId}`)
+        navigate(`/chat?id=${chatId}`);
     };
 
     return (
         <div className="container mt-4">
-            <h2>Meus Chats</h2>
+            <h2 className="text-center text-primary mb-4">Meus Chats</h2>
             {chats.length === 0 ? (
-                <div className="alert text-center">
-                    <p>Você ainda não tem chats.</p>
+                <div className="alert alert-info text-center">
+                    <p>Você ainda não tem chats ativos.</p>
                 </div>
             ) : (
-                <ul className="list-group">
+                <div className="row">
                     {chats.map(chat => (
-                        <li key={chat.id} className="list-group-item">
-                            <h5>Chat com: {chat.usuario_visitante}</h5>
-                            <p>Última mensagem: {chat.ultima_mensagem}</p>
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => iniciarChatOwner(chat.id, chat.usuario_visitante)}
-                            >
-                                Iniciar Chat com visitante
-                            </button>
-                        </li>
+                        <div key={chat.id} className="col-md-6 mb-4">
+                            <div className="card shadow-sm">
+                                <div className="card-body">
+                                    <h5 className="card-title text-primary">Chat com: {chat.usuario_visitante}</h5>
+                                    <p className="card-text">
+                                        <strong>Última mensagem:</strong> {chat.ultima_mensagem || 'Sem mensagens'}
+                                    </p>
+                                    <button
+                                        className="btn btn-primary w-100 mt-3"
+                                        onClick={() => iniciarChatOwner(chat.id)}
+                                    >
+                                        Continuar Conversa
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
         </div>
     );

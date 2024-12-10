@@ -20,9 +20,8 @@ const ItemDetail = () => {
                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                     }
                 });
-                setLoggedUser(user.data)
+                setLoggedUser(user.data);
                 
-
                 const token = localStorage.getItem('accessToken');
                 if (!token) {
                     alert('Token JWT não encontrado!');
@@ -43,7 +42,6 @@ const ItemDetail = () => {
     }, [id]);
 
     useEffect(() => {
-        // Limpeza do WebSocket quando o componente for desmontado
         return () => {
             if (ws) {
                 ws.close();
@@ -54,64 +52,29 @@ const ItemDetail = () => {
     const iniciarChat = async () => {
         const token = localStorage.getItem('accessToken');
         const response = await axios.post(`${apiUrl}/api/chats/iniciar_chat/`, {
-            usuarioDono: item.usuario,  // Pode ser o nome do usuário ou outro identificador
+            usuarioDono: item.usuario,
             usuarioVisitante: loggedUser,
-            anuncio: id, // Id do item do chat
-
-        },{
+            anuncio: id,
+        }, {
             headers: {
-                Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
+                Authorization: `Bearer ${token}`, 
             }
         });
 
         setChat(response.data.chat_id);
-        // const socket = new WebSocket('ws://localhost:8001');
-    
-        // socket.onopen = () => {
-        //     console.log('Conexão WebSocket estabelecida.');
-        // };
-    
-        // socket.onmessage = (event) => {
-        //     const newMessage = JSON.parse(event.data);
-        //     console.log('Mensagem recebida:', newMessage);
-        //     setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
-        // };
-    
-        // socket.onerror = (event) => {
-        //     // Se for um erro de evento, imprima as informações completas
-        //     if (event && event.message) {
-        //         console.error('Erro na conexão WebSocket:', event.message);
-        //         alert(`Erro na conexão WebSocket: ${event.message}`);
-        //     } else {
-        //         // Caso o erro seja um objeto Error (eventualmente)
-        //         console.error('Erro na conexão WebSocket:', event);
-        //         alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
-        //     }
-        // };
-    
-        // socket.onclose = () => {
-        //     console.log('Conexão WebSocket fechada.');
-        // };
-    
-        setWs(true);  // Atualiza o estado do WebSocket
+        setWs(true);
     };
 
     const enviarMensagem = async () => {
-
         if (ws && messageInput) {
-            // Enviar mensagem através do WebSocket
-            const roomId = chat;
-            setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
-            // ws.send(JSON.stringify({ message: messageInput, roomId: roomId}));
-    
-            // Enviar a mensagem para o Django para salvar no banco
+            setMessages((prevMessages) => [...prevMessages, { content: messageInput }]);
             try {
                 await axios.post(`${apiUrl}/api/mensagens/`, {
-                    chat: chat,  // Pode ser o nome do usuário ou outro identificador
+                    chat: chat,
                     content: messageInput,
-                    usuario: loggedUser, // Id do item do chat
+                    usuario: loggedUser,
                 });
-                setMessageInput(''); // Limpar o campo de input
+                setMessageInput('');
             } catch (error) {
                 console.error('Erro ao salvar a mensagem:', error);
             }
@@ -122,33 +85,48 @@ const ItemDetail = () => {
 
     return (
         <div className="container mt-4">
-            <h1>{item.nome}</h1>
-            <p><strong>Categoria:</strong> {item.categoria}</p>
-            <p><strong>Valor:</strong> R$ {item.valor}</p>
-            <p><strong>Usuário:</strong> {item.usuario}</p>
-            
-            <button className="btn btn-primary" onClick={iniciarChat}>
-                Iniciar Chat com dono do Anúncio
-            </button>
+            <div className="card shadow-sm p-4 mb-4">
+                <h1 className="text-primary">{item.nome}</h1>
+                <p><strong>Categoria:</strong> {item.categoria}</p>
+                <p><strong>Valor:</strong> R$ {item.valor}</p>
+                <p><strong>Usuário:</strong> {item.usuario}</p>
+                <button className="btn btn-primary mt-3" onClick={iniciarChat}>
+                    Iniciar Chat com dono do Anúncio
+                </button>
+            </div>
 
             {ws && (
-                <div>
-                    <h3>Chat:</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
+                <div className="card shadow-sm p-4">
+                    <h3 className="text-secondary">Chat</h3>
+                    <div 
+                        style={{
+                            maxHeight: '200px', 
+                            overflowY: 'scroll', 
+                            background: '#f8f9fa', 
+                            border: '1px solid #dee2e6', 
+                            borderRadius: '5px', 
+                            padding: '10px'
+                        }}
+                    >
                         {messages.map((msg, index) => (
-                            <div key={index}>{msg.content}</div>
+                            <div key={index} className="p-2 mb-2 bg-light rounded">
+                                {msg.content}
+                            </div>
                         ))}
                     </div>
 
-                    <input
-                        type="text"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        placeholder="Digite sua mensagem"
-                    />
-                    <button className="btn btn-secondary" onClick={enviarMensagem}>
-                        Enviar
-                    </button>
+                    <div className="input-group mt-3">
+                        <input
+                            type="text"
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                            className="form-control"
+                            placeholder="Digite sua mensagem"
+                        />
+                        <button className="btn btn-secondary" onClick={enviarMensagem}>
+                            Enviar
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
