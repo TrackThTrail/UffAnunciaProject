@@ -18,6 +18,9 @@ const ItemDetail = () => {
         if (currentEvaluation) {
             setRating(currentEvaluation.nota);  // Set rating based on current evaluation
         }
+        else {
+            setRating(0);
+        }
     }, [currentEvaluation]);
 
     useEffect(() => {
@@ -163,7 +166,8 @@ const ItemDetail = () => {
                 alert('Token JWT não encontrado!');
                 return;
             }
-            await axios.post(
+            
+            const response = await axios.post(
                 `${apiUrl}/api/avaliacoes/${id}/avaliar/`,
                 { rating }, 
                 {
@@ -172,6 +176,9 @@ const ItemDetail = () => {
                     }
                 }
             );
+    
+            // Update currentEvaluation to reflect the submitted evaluation
+            setCurrentEvaluation(response.data); 
             alert('Avaliação enviada com sucesso!');
         } catch (error) {
             console.error('Erro ao enviar avaliação:', error);
@@ -179,8 +186,37 @@ const ItemDetail = () => {
         }
     };
 
+    const removerAvaliacao = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('Token JWT não encontrado!');
+                return;
+            }
+    
+            const response = await axios.delete(
+                `${apiUrl}/api/avaliacoes/${id}/remover_avaliacao/`, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    data: { anuncio_id: id }  // Pass the id as part of the request body
+                }
+            );
+            alert('Avaliação removida com sucesso!');
+            setCurrentEvaluation(null);
+            setRating(0);
+        } catch (error) {
+            console.error('Erro ao remover avaliação:', error);
+            if (error.response) {
+                console.error('Erro na resposta:', error.response.data);
+            }
+            alert('Não foi possível remover a avaliação.');
+        }
+    };
+
     const handleStarClick = (index) => {
-        setRating(index + 1);  // Set rating to the clicked star
+        setRating(index + 1);
     };
 
     if (!item) return <p>Carregando...</p>;
@@ -202,14 +238,21 @@ const ItemDetail = () => {
                                 <span
                                     key={index}
                                     className={`star ${index < rating ? 'filled' : ''}`}
-                                    onClick={() => handleStarClick(index)} // Update the rating when a star is clicked
+                                    onClick={() => handleStarClick(index)}
                                 >
                                     ★
                                 </span>
                             ))}
                         </div>
-                        <button className="btn btn-secondary" onClick={enviarAvaliacao}>
+                        <button
+                            className={`btn ${rating >= 1 ? 'btn-secondary' : 'btn-secondary'}`}
+                            onClick={enviarAvaliacao}
+                            disabled={rating < 1}
+                        >
                             Editar
+                        </button>
+                        <button className="btn btn-danger ml-2" onClick={removerAvaliacao}>
+                            Remover
                         </button>
                     </div>
                 ) : (
@@ -219,13 +262,17 @@ const ItemDetail = () => {
                                 <span
                                     key={index}
                                     className={`star ${index < rating ? 'filled' : ''}`}
-                                    onClick={() => handleStarClick(index)} // Update the rating when a star is clicked
+                                    onClick={() => handleStarClick(index)}
                                 >
                                     ★
                                 </span>
                             ))}
                         </div>
-                        <button className="btn btn-success" onClick={enviarAvaliacao}>
+                        <button
+                            className={`btn ${rating >= 1 ? 'btn-success' : 'btn-secondary'}`}
+                            onClick={enviarAvaliacao}
+                            disabled={rating < 1}
+                        >
                             Avaliar
                         </button>
                     </div>

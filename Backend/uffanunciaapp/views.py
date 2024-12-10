@@ -289,3 +289,31 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
                 {"error": "Anúncio não encontrado."},
                 status=status.HTTP_404_NOT_FOUND
             )
+        
+    @action(detail=True, methods=['DELETE'], url_path='remover_avaliacao')
+    def remover_avaliacao(self, request, pk=None):
+        usuario = request.user
+        anuncio_id = pk  # Use the primary key from the URL
+
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+            avaliacao = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
+            
+            if not avaliacao:
+                return Response(
+                    {"error": "Avaliação não encontrada para este anúncio."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Remove the evaluation
+            avaliacao.delete()
+
+            return Response(
+                {"message": "Avaliação removida com sucesso."},
+                status=status.HTTP_200_OK
+            )
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
