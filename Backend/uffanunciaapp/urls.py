@@ -1,8 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AnuncioViewSet, MensagemView
+from .views import *
 from . import views
-from .views import MensagemView, ChatView
 from django.shortcuts import render
 
 
@@ -11,6 +10,7 @@ router = DefaultRouter()
 router.register(r'anuncios', AnuncioViewSet)
 router.register(r'mensagens', MensagemView)
 router.register(r'chats', ChatView)
+router.register(r'avaliacoes', AvaliacaoViewSet)
 
 
 def serve_react(request):
