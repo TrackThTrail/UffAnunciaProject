@@ -11,11 +11,8 @@ import MeusChats from './components/MeusChats';
 import { useEffect, useState } from 'react';
 import Chat from './components/Chat';
 
-
 const App = () => {
-
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
 
     useEffect(() => {
         // Verifica se o token de autenticação existe no localStorage
@@ -37,9 +34,10 @@ const App = () => {
                         } />
                     <Route path="/anuncios" element={<ItemList />} />
                     <Route path="/cadastrar" element={<CadastroAnuncio />} />
-                    <Route path="/anuncios/:id" element={<ItemDetail />} /> {/* Rota para detalhes */}
-                    <Route path="/meus_anuncios" element={<MeusAnuncios />} /> {/* Nova rota */}
-                    <Route path="/cadastro" element={<Cadastro />} /> {/* Nova rota */}
+                    <Route path="/anuncios/:id" element={<ItemDetail />} />
+                    <Route path="/meus_anuncios" element={<MeusAnuncios />} />
+                    <Route path="/cadastro" element={<Cadastro />} />
+                    <Route path="/editar-anuncio/:id" element={<CadastroAnuncio />} />
                     <Route path="/meus-chats" element={<MeusChats />} />
                     <Route path="/chat" element={<Chat />} /> {/* Rota para detalhes */}
                     <Route path="/sla" element={<sla />} /> 

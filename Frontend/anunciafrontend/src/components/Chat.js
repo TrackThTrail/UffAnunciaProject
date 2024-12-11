@@ -10,14 +10,14 @@ const Chat = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const chatId = queryParams.get('id');
-    const [ws, setWs] = useState(null);
+    const [ws, setWs] = useState(false);
     const [usuarioDono, setUsuarioDono] = useState('');
 
     useEffect(() => {
         // Limpeza do WebSocket quando o componente for desmontado
         return () => {
             if (ws) {
-                ws.close();
+                // ws.close();
             }
         };
     }, [ws]);
@@ -49,40 +49,40 @@ const Chat = () => {
     }, [chatId]);
 
     const startSocketConnection = async () => {
-        const socket = new WebSocket('ws://localhost:8001');
+        // const socket = new WebSocket('ws://localhost:8001');
     
-        socket.onopen = () => {
-            console.log('Conexão WebSocket estabelecida.');
-        };
+        // socket.onopen = () => {
+        //     console.log('Conexão WebSocket estabelecida.');
+        // };
     
-        socket.onmessage = (event) => {
-            debugger;
-            const newMessage = JSON.parse(event.data);
-            console.log('Mensasdida:', newMessage);
-            setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
-        };
+        // socket.onmessage = (event) => {
+        //     debugger;
+        //     const newMessage = JSON.parse(event.data);
+        //     console.log('Mensasdida:', newMessage);
+        //     setMessages((prevMessages) => [...prevMessages, newMessage]); // Atualiza as mensagens
+        // };
     
-        socket.onerror = (event) => {
-            // Se for um erro de evento, imprima as informações completas
-            if (event && event.message) {
-                console.error('Erro na conexão WebSocket:', event.message);
-                alert(`Erro na conexão WebSocket: ${event.message}`);
-            } else {
-                // Caso o erro seja um objeto Error (eventualmente)
-                console.error('Erro na conexão WebSocket:', event);
-                alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
-            }
-        };
+        // socket.onerror = (event) => {
+        //     // Se for um erro de evento, imprima as informações completas
+        //     if (event && event.message) {
+        //         console.error('Erro na conexão WebSocket:', event.message);
+        //         alert(`Erro na conexão WebSocket: ${event.message}`);
+        //     } else {
+        //         // Caso o erro seja um objeto Error (eventualmente)
+        //         console.error('Erro na conexão WebSocket:', event);
+        //         alert(`Erro na conexão WebSocket: ${JSON.stringify(event)}`);
+        //     }
+        // };
     
-        socket.onclose = () => {
-            console.log('Conexão WebSocket fechada.');
-        };
-        setWs(socket);
+        // socket.onclose = () => {
+        //     console.log('Conexão WebSocket fechada.');
+        // };
+        setWs(true);
     }
 
     const enviarMensagem = async () => {
         if (ws && messageInput) {
-            ws.send(JSON.stringify({ message: messageInput, roomId: parseInt(chatId) }));
+            // ws.send(JSON.stringify({ message: messageInput, roomId: parseInt(chatId) }));
             setMessages((prevMessages) => [...prevMessages, {'content': messageInput}]);
             // Enviar a mensagem para salvar no Django
             try {
@@ -103,8 +103,13 @@ const Chat = () => {
             <h3>Chat com: {'usuarioVisitante'}</h3>
             <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
                 {messages.map((msg, index) => (
-                    <div key={index}>{msg.content}</div>
-                ))}
+                                <div className="card mb-3" key={index}>
+                                    <div className="card-body">
+                                        <h5 className="card-title">{msg.usuario.username}</h5>
+                                        <p className="card-text">{msg.content}</p>
+                                    </div>
+                                </div>
+                            ))}
             </div>
 
             <input
