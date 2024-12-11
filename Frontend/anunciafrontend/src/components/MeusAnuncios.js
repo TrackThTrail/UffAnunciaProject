@@ -31,6 +31,33 @@ const MeusAnuncios = () => {
         fetchMeusAnuncios();
     }, []);
 
+    const handleDelete = async (id)=>{
+        if(!window.confirm("Tem certeza que quer excluir esse anuncio?")){
+            return;
+        }
+        try{
+            const token = localStorage.getItem('accessToken');
+            if(!token){
+                alert("Fudeu de vez! Não achou o token jwt");
+                return;
+            }
+            //Faz a requisição DELETE para o backend
+            const response = await axios.delete(`${apiUrl}/api/meus_anuncios/${id}/`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, //Adiciona o token no cabeçalho
+                },
+            });
+    
+            //Atualiza o estado Local removendo o item deletado
+            setMeusAnuncios((prevAnuncios) => prevAnuncios.filter((item) => item.id !== id));
+            alert('Anuncio deletado com sucesso!');
+        }catch(error){
+            console.error('Erro ao deletar o anuncio', error.response ? error.response.data: error);
+            alert(error);
+        }
+    }
+    
+
     return (
         <div className="container mt-4">
             <h1 className="mb-4">Meus Anúncios</h1>
@@ -46,8 +73,15 @@ const MeusAnuncios = () => {
                 <ul className="list-group">
                     {meusAnuncios.map(item => (
                         <li key={item.id} className="list-group-item">
-                            <h5>{item.nome}</h5>
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <h5>{item.nome}</h5>
+                                <button style={{ backgroundColor: "#EB5F5F"}}className="btn btn-info" onClick={() =>handleDelete(item.id)}>
+                                Deletar
+                                </button>
+                            </div>
+                            
                             <p>Categoria: {item.categoria}</p>
+                            <p>Local: {item.local}</p>
                             <p>Valor: R$ {item.valor}</p>
                             <div className="mt-4">
                                 <button className="btn btn-info" onClick={() => navigate(`/meus-chats?id=${item.id}`)}>
@@ -56,7 +90,7 @@ const MeusAnuncios = () => {
                                 {/* Botão de Edição */}
                                 <button 
                                     className="btn btn-warning ms-2" 
-                                    onClick={() => navigate(`/editar-anuncio/${item.id}`)}>
+                                    onClick={() => navigate(`/editar-anuncio/${item.id}/`)}>
                                     Editar
                                 </button>
                             </div>

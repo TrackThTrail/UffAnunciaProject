@@ -34,9 +34,10 @@ const ItemList = () => {
             <h1 className="mb-4">Itens</h1>
             <ul className="list-group">
                 {itens.map(item => (
-                    <li key={item.id} className="list-group-item" onClick={() => navigate(`/anuncios/${item.id}`)}>
+                    <li key={item.id} className="list-group-item" onClick={() => navigate(`/anuncios/${item.id}/`)}>
                         <h5>{item.nome}</h5>
                         <p>Categoria: {item.categoria}</p>
+                        <p>Local: {item.local}</p>
                         <p>Valor: R$ {item.valor}</p>
                     </li>
                 ))}

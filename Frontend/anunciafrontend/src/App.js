@@ -39,7 +39,8 @@ const App = () => {
                     <Route path="/cadastro" element={<Cadastro />} />
                     <Route path="/editar-anuncio/:id" element={<CadastroAnuncio />} />
                     <Route path="/meus-chats" element={<MeusChats />} />
-                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/chat" element={<Chat />} /> {/* Rota para detalhes */}
+                    <Route path="/sla" element={<sla />} /> 
                 </Routes>
             </div>
         </Router>

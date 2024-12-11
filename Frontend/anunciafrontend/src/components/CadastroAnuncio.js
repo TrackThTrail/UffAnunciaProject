@@ -6,7 +6,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 const CadastroAnuncio = () => {
     const [nome, setNome] = useState('');
     const [categoria, setCategoria] = useState('');
+    const [local, setLocal] = useState('');
     const [valor, setValor] = useState('');
+
+    const locais = [
+        { value: 'niteroi', label: 'Niterói' },
+        { value: 'rio de janeiro', label: 'Rio de Janeiro' },
+        { value: 'sao goncalo', label: 'São Gonçalo' },
+        { value: 'oceanica', label: 'Região Oceânica' },
+        { value: 'outro', label: 'Outro' }
+    ];
 
     const categorias = [
         { value: 'academico', label: 'Acadêmico' },
@@ -33,9 +42,10 @@ const CadastroAnuncio = () => {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    const { nome, categoria, valor } = response.data[0];
+                    const { nome, categoria, local, valor } = response.data[0];
                     setNome(nome);
                     setCategoria(categoria);
+                    setLocal(local);
                     setValor(valor);
                 } catch (error) {
                     alert('Erro ao carregar os dados do anúncio.');
@@ -47,7 +57,7 @@ const CadastroAnuncio = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const anuncio = { nome, categoria, valor };
+        const anuncio = { nome, categoria, local, valor };
         const token = localStorage.getItem('accessToken');
         if (!token) {
             alert('Token JWT não encontrado!');
@@ -57,7 +67,7 @@ const CadastroAnuncio = () => {
         try {
             if (id) {
                 // Se estiver editando, fazer PUT
-                await axios.put(`${apiUrl}/api/anuncios/${id}`, anuncio, {
+                await axios.put(`${apiUrl}/api/anuncios/${id}/`, anuncio, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -72,6 +82,7 @@ const CadastroAnuncio = () => {
             }
             setNome('');
             setCategoria('');
+            setLocal('');
             setValor('');
             navigate('/anuncios'); // Após salvar, redireciona para a lista
         } catch (error) {
@@ -112,6 +123,22 @@ const CadastroAnuncio = () => {
                     >
                         <option value="" disabled>Selecione uma categoria</option>
                         {categorias.map((cat) => (
+                            <option key={cat.value} value={cat.value}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Local:</label>
+                    <select
+                        className="form-control"
+                        value={local}
+                        onChange={(e) => setLocal(e.target.value)}
+                        required
+                    >
+                        <option value="" disabled>Selecione um local</option>
+                        {locais.map((cat) => (
                             <option key={cat.value} value={cat.value}>
                                 {cat.label}
                             </option>
