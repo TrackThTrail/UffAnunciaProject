@@ -37,6 +37,7 @@ const ItemList = () => {
                     <li key={item.id} className="list-group-item" onClick={() => navigate(`/anuncios/${item.id}/`)}>
                         <h5>{item.nome}</h5>
                         <p>Categoria: {item.categoria}</p>
+                        <p>Local: {item.local}</p>
                         <p>Valor: R$ {item.valor}</p>
                     </li>
                 ))}

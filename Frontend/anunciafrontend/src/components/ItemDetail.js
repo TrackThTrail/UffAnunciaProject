@@ -225,6 +225,7 @@ const ItemDetail = () => {
         <div className="container mt-4">
             <h1>{item.nome}</h1>
             <p><strong>Categoria:</strong> {item.categoria}</p>
+            <p><strong>Local:</strong>{item.local}</p>
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
 
