@@ -39,6 +39,26 @@ def cadastro(request):
     User.objects.create(username=username, password=make_password(password))
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deletar_anuncio(request, id):
+    try:
+        # Tenta pegar o anúncio com o id e garantir que pertence ao usuário autenticado
+        anuncio = Anuncio.objects.get(id=id, usuario=request.user)
+        anuncio.delete()  # Deleta o anúncio
+        return Response({"message": "Anúncio deletado com sucesso!"}, status=status.HTTP_204_NO_CONTENT)
+    
+    except Anuncio.DoesNotExist:
+        # Caso o anúncio não exista ou não pertença ao usuário autenticado
+        return JsonResponse(
+            {"error": "Anúncio não encontrado ou você não tem permissão para deletá-lo!"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    except Exception as e:
+        # Para qualquer outro erro inesperado
+        return JsonResponse({"error": "Erro interno no servidor", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class AnuncioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
