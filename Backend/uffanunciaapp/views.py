@@ -14,6 +14,25 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 
+class AnuncioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    
+    queryset = Anuncio.objects.all()
+    serializer_class = AnuncioSerializer
+
+    def create(self, request):
+        nome = request.data.get('nome')
+        categoria = request.data.get('categoria')
+        valor = request.data.get('valor')
+        usuario = request.user
+        anuncio = Anuncio(nome=nome, categoria=categoria, valor=valor, usuario=usuario)
+        anuncio.save()
+        return HttpResponse(status=200)
+    
+    def destroi(self,request):
+        anuncio = self.get_object() #Obtem o objeto basaedo na pk
+        anuncio.delete() #Exclui o objeto
+        return Response({"message": "Anuncio excluido"})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -91,6 +110,27 @@ class AnuncioViewSet(viewsets.ModelViewSet):
         serializer = AnuncioSerializer(anuncio, many=True)
         return Response(serializer.data)
 
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deletar_anuncio(request, id):
+    try:
+        # Tenta pegar o anúncio com o id e garantir que pertence ao usuário autenticado
+        anuncio = Anuncio.objects.get(id=id, usuario=request.user)
+        anuncio.delete()  # Deleta o anúncio
+        return Response({"message": "Anúncio deletado com sucesso!"}, status=status.HTTP_204_NO_CONTENT)
+    
+    except Anuncio.DoesNotExist:
+        # Caso o anúncio não exista ou não pertença ao usuário autenticado
+        return JsonResponse(
+            {"error": "Anúncio não encontrado ou você não tem permissão para deletá-lo!"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    except Exception as e:
+        # Para qualquer outro erro inesperado
+        return JsonResponse({"error": "Erro interno no servidor", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ChatView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
