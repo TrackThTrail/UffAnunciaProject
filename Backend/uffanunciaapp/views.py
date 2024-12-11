@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
-from .models import Anuncio, Mensagem
-from .serializers import AnuncioSerializer, MensagemSerializer
+from .models import Anuncio, Mensagem, Avaliacao
+from .serializers import AnuncioSerializer, MensagemSerializer, AvaliacaoSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, action
@@ -158,3 +158,164 @@ class MensagemView(viewsets.ModelViewSet):
 
         serializer = MensagemSerializer(chat_message)
         return Response(serializer.data)
+    
+class AvaliacaoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Avaliacao.objects.all()
+    serializer_class = AvaliacaoSerializer
+
+    def create(self, request):
+        usuario = request.user
+        anuncio_id = request.data.get('anuncio_id')
+        rating = request.data.get('rating')
+
+        if not anuncio_id or not rating:
+            return Response(
+                {"error": "Os campos 'anuncio_id' e 'rating' são obrigatórios."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+
+            avaliacao_existente = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
+            if avaliacao_existente:
+                return Response(
+                    {"error": "Você já avaliou este anúncio."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            avaliacao = Avaliacao.objects.create(
+                usuario=usuario,
+                anuncio=anuncio,
+                nota=rating
+            )
+
+            serializer = AvaliacaoSerializer(avaliacao)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def list(self, request):
+        avaliacoes = Avaliacao.objects.filter(usuario=request.user)
+        serializer = AvaliacaoSerializer(avaliacoes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['POST'], url_path='avaliar')
+    def avaliar(self, request, pk=None):
+        usuario = request.user
+        anuncio_id = pk
+        rating = request.data.get('rating')
+
+        if not rating:
+            return Response(
+                {"error": "O campo 'rating' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+
+            avaliacao_existente = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
+
+            if avaliacao_existente:
+                avaliacao_existente.nota = rating
+                avaliacao_existente.save()
+
+                serializer = AvaliacaoSerializer(avaliacao_existente)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            avaliacao = Avaliacao.objects.create(
+                usuario=usuario,
+                anuncio=anuncio,
+                nota=rating
+            )
+
+            serializer = AvaliacaoSerializer(avaliacao)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+    @action(detail=False, methods=['GET'])
+    def anuncio_avaliacoes(self, request):
+        anuncio_id = request.query_params.get('anuncio_id')
+        if not anuncio_id:
+            return Response(
+                {"error": "O parâmetro 'anuncio_id' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+            avaliacoes = Avaliacao.objects.filter(anuncio=anuncio)
+            serializer = AvaliacaoSerializer(avaliacoes, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=False, methods=['GET'])
+    def get_avaliacao(self, request):
+        anuncio_id = request.query_params.get('anuncio_id')
+        if not anuncio_id:
+            return Response(
+                {"error": "O parâmetro 'anuncio_id' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+            avaliacao = Avaliacao.objects.filter(usuario=request.user, anuncio=anuncio).first()
+            
+            if avaliacao:
+                serializer = AvaliacaoSerializer(avaliacao)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"message": "Você ainda não avaliou este anúncio."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+    @action(detail=True, methods=['DELETE'], url_path='remover_avaliacao')
+    def remover_avaliacao(self, request, pk=None):
+        usuario = request.user
+        anuncio_id = pk  # Use the primary key from the URL
+
+        try:
+            anuncio = Anuncio.objects.get(pk=anuncio_id)
+            avaliacao = Avaliacao.objects.filter(usuario=usuario, anuncio=anuncio).first()
+            
+            if not avaliacao:
+                return Response(
+                    {"error": "Avaliação não encontrada para este anúncio."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Remove the evaluation
+            avaliacao.delete()
+
+            return Response(
+                {"message": "Avaliação removida com sucesso."},
+                status=status.HTTP_200_OK
+            )
+        except Anuncio.DoesNotExist:
+            return Response(
+                {"error": "Anúncio não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )

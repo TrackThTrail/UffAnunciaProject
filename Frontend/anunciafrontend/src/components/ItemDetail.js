@@ -11,6 +11,17 @@ const ItemDetail = () => {
     const [messageInput, setMessageInput] = useState('');
     const [loggedUser, setLoggedUser] = useState('');
     const [chat, setChat] = useState('');
+    const [rating, setRating] = useState(1);
+    const [currentEvaluation, setCurrentEvaluation] = useState(null);
+
+    useEffect(() => {
+        if (currentEvaluation) {
+            setRating(currentEvaluation.nota);  // Set rating based on current evaluation
+        }
+        else {
+            setRating(0);
+        }
+    }, [currentEvaluation]);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -28,12 +39,21 @@ const ItemDetail = () => {
                     alert('Token JWT não encontrado!');
                     return;
                 }
+
                 const response = await axios.get(`${apiUrl}/api/anuncios/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,  // Adiciona o token no cabeçalho
                     }
                 });
                 setItem(response.data);
+
+                const evalResponse = await axios.get(`${apiUrl}/api/avaliacoes/get_avaliacao/`, {
+                    params: { anuncio_id: id },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                setCurrentEvaluation(evalResponse.data);
             } catch (error) {
                 console.error("Erro ao buscar o anúncio:", error);
             }
@@ -71,6 +91,7 @@ const ItemDetail = () => {
         };
     }, [ws]);
 
+    
     const iniciarChat = async () => {
         const token = localStorage.getItem('accessToken');
         const response = await axios.post(`${apiUrl}/api/chats/iniciar_chat/`, {
@@ -138,6 +159,66 @@ const ItemDetail = () => {
         }
     };
 
+    const enviarAvaliacao = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('Token JWT não encontrado!');
+                return;
+            }
+            
+            const response = await axios.post(
+                `${apiUrl}/api/avaliacoes/${id}/avaliar/`,
+                { rating }, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, 
+                    }
+                }
+            );
+    
+            // Update currentEvaluation to reflect the submitted evaluation
+            setCurrentEvaluation(response.data); 
+            alert('Avaliação enviada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao enviar avaliação:', error);
+            alert('Não foi possível enviar a avaliação.');
+        }
+    };
+
+    const removerAvaliacao = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('Token JWT não encontrado!');
+                return;
+            }
+    
+            const response = await axios.delete(
+                `${apiUrl}/api/avaliacoes/${id}/remover_avaliacao/`, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    data: { anuncio_id: id }  // Pass the id as part of the request body
+                }
+            );
+            alert('Avaliação removida com sucesso!');
+            setCurrentEvaluation(null);
+            setRating(0);
+        } catch (error) {
+            console.error('Erro ao remover avaliação:', error);
+            if (error.response) {
+                console.error('Erro na resposta:', error.response.data);
+            }
+            alert('Não foi possível remover a avaliação.');
+        }
+    };
+
+    const handleStarClick = (index) => {
+        setRating(index + 1);
+    };
+
     if (!item) return <p>Carregando...</p>;
 
     return (
@@ -147,36 +228,70 @@ const ItemDetail = () => {
             <p><strong>Local:</strong>{item.local}</p>
             <p><strong>Valor:</strong> R$ {item.valor}</p>
             <p><strong>Usuário:</strong> {item.usuario}</p>
-            
-            <button className="btn btn-primary" onClick={iniciarChat}>
-                Iniciar Chat com dono do Anúncio
-            </button>
 
-            {ws && (
-                <div>
-                    <h3>Chat:</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
-                        {messages.map((msg, index) => (
-                            <div className="card mb-3" key={index}>
-                                <div className="card-body">
-                                    <h5 className="card-title">{msg.usuario.username}</h5>
-                                    <p className="card-text">{msg.content}</p>
-                                </div>
-                            </div>
-                        ))}
+            <div className="mt-4">
+                <h3>{currentEvaluation ? "Sua avaliação:" : "Avalie este anúncio:"}</h3>
+
+                {currentEvaluation ? (
+                    <div className="d-flex align-items-center">
+                        <div className="star-rating">
+                            {[...Array(5)].map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`star ${index < rating ? 'filled' : ''}`}
+                                    onClick={() => handleStarClick(index)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <button
+                            className={`btn ${rating >= 1 ? 'btn-secondary' : 'btn-secondary'}`}
+                            onClick={enviarAvaliacao}
+                            disabled={rating < 1}
+                        >
+                            Editar
+                        </button>
+                        <button className="btn btn-danger ml-2" onClick={removerAvaliacao}>
+                            Remover
+                        </button>
                     </div>
+                ) : (
+                    <div className="d-flex align-items-center">
+                        <div className="star-rating">
+                            {[...Array(5)].map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`star ${index < rating ? 'filled' : ''}`}
+                                    onClick={() => handleStarClick(index)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <button
+                            className={`btn ${rating >= 1 ? 'btn-success' : 'btn-secondary'}`}
+                            onClick={enviarAvaliacao}
+                            disabled={rating < 1}
+                        >
+                            Avaliar
+                        </button>
+                    </div>
+                )}
+            </div>
 
-                    <input
-                        type="text"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        placeholder="Digite sua mensagem"
-                    />
-                    <button className="btn btn-secondary" onClick={enviarMensagem}>
-                        Enviar
-                    </button>
-                </div>
-            )}
+            <style jsx>{`
+                .star {
+                    font-size: 32px;  /* Increase the size of the stars */
+                    color: #ddd;  /* Empty stars (light gray) */
+                    cursor: pointer;
+                    margin-right: 5px;
+                }
+
+                .star.filled {
+                    color: gold;  /* Filled stars (gold) */
+                }
+            `}</style>
         </div>
     );
 };
