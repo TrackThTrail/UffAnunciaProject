@@ -37,3 +37,14 @@
     transform: rotate(360deg);
   }
 }
+
+.star {
+  font-size: 32px;  /* Increase the size of the stars */
+  color: #ddd;  /* Empty stars (light gray) */
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.star.filled {
+  color: gold;  /* Filled stars (gold) */
+}

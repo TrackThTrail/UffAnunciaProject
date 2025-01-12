@@ -32,7 +32,7 @@ git pull
 ### Criar nova branch e colocar no repositório
 ```cmd
 git checkout -b [nome da branch ex: FEAT-5]
-git push -u develop [nome da branch que você criou]
+git push -u origin [nome da branch que você criou]
 ```
 
 ### Após desenvolver na branch, fazer o push
@@ -64,3 +64,10 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 Para salvar alterações no banco de dados
+
+### Testes
+Ir para o diretório Backend e utilizar o comando
+```
+python manage.py test uffanunciaapp
+```
+Adicionar testes em test_views.py ou criar outro arquivo com 'test' no início.
