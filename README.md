@@ -65,9 +65,13 @@ python manage.py migrate
 ```
 Para salvar alterações no banco de dados
 
-### Testes
+## Testes
 Ir para o diretório Backend e utilizar o comando
 ```
 python manage.py test uffanunciaapp
 ```
 Adicionar testes em test_views.py ou criar outro arquivo com 'test' no início.
+
+### GitHub Workflow
+O arquivo de configuração dos testes está em .github/workflows  
+Está configurado para executar os comandos em 'run:' em cada push ou pull request  
