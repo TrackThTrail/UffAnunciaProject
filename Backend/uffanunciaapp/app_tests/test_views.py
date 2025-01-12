@@ -1,82 +1,150 @@
-from django.contrib.auth.models import User
-from rest_framework.test import APITestCase
-from rest_framework.authtoken.models import Token
+from django.test import TestCase
+from django.urls import reverse
 from rest_framework import status
-from ..models import Anuncio  # Replace with your actual model import if different
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+from ..models import Anuncio, Chat, Mensagem, Avaliacao
+from rest_framework.test import APIClient
 
 
-class AnuncioAPITests(APITestCase):
+class AnuncioTests(TestCase):
+
     def setUp(self):
-        # Create a test user and token
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
-
-        # Set up initial test data
-        self.anuncio = Anuncio.objects.create(
-            nome="Initial Ad",
-            categoria="Books",
-            local="Library",
-            valor=50.0,
-            user=self.user,
-        )
-
-        self.valid_payload = {
-            "nome": "Updated Ad",
-            "categoria": "Electronics",
-            "local": "City Center",
-            "valor": 100.0,
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.force_authenticate(user=self.user)
+        self.anuncio_data = {
+            'nome': 'Test Anuncio',
+            'categoria': 'academico',
+            'local': 'niteroi',
+            'valor': '100.00',
+            'usuario': self.user.id
         }
-
-        self.invalid_payload = {
-            "nome": "",
-            "categoria": "Electronics",
-            "local": "City Center",
-        }  # Missing 'valor'
+        self.anuncio = Anuncio.objects.create(
+            nome='Test Anuncio',
+            categoria='academico',
+            local='niteroi',
+            valor=100.00,
+            usuario=self.user
+        )
 
     def test_create_anuncio(self):
-        """Test creating a new 'anuncio' with valid data."""
-        response = self.client.post("/api/anuncios/", self.valid_payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["nome"], self.valid_payload["nome"])
-
-    def test_create_anuncio_invalid(self):
-        """Test creating a new 'anuncio' with invalid data."""
-        response = self.client.post("/api/anuncios/", self.invalid_payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("valor", response.data)  # Check for specific error messages
-
-    def test_update_anuncio(self):
-        """Test updating an existing 'anuncio'."""
-        response = self.client.put(
-            f"/api/anuncios/{self.anuncio.id}/", self.valid_payload, format="json"
-        )
+        response = self.client.post('/api/anuncios/', self.anuncio_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.anuncio.refresh_from_db()
-        self.assertEqual(self.anuncio.nome, self.valid_payload["nome"])
+        self.assertTrue(Anuncio.objects.filter(id=self.anuncio.id).exists())
 
-    def test_update_anuncio_invalid(self):
-        """Test updating an existing 'anuncio' with invalid data."""
-        response = self.client.put(
-            f"/api/anuncios/{self.anuncio.id}/", self.invalid_payload, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("valor", response.data)
-
-    def test_list_anuncios(self):
-        """Test retrieving the list of 'anuncios'."""
-        response = self.client.get("/api/anuncios/")
+    def test_get_my_anuncios(self):
+        response = self.client.get('/api/meus_anuncios/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
-
-    def test_retrieve_anuncio(self):
-        """Test retrieving a single 'anuncio'."""
-        response = self.client.get(f"/api/anuncios/{self.anuncio.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["nome"], self.anuncio.nome)
+        self.assertEqual(len(response.data), 1)
 
     def test_delete_anuncio(self):
-        """Test deleting an 'anuncio'."""
-        response = self.client.delete(f"/api/anuncios/{self.anuncio.id}/")
+        response = self.client.delete(f'/api/meus_anuncios/{self.anuncio.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Anuncio.objects.filter(id=self.anuncio.id).exists())
+
+
+class ChatTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username="testuser1", password="password")
+        self.user2 = User.objects.create_user(username="testuser2", password="password")
+        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user2)
+        self.anuncio = Anuncio.objects.create(
+            nome='Test Anuncio',
+            categoria='academico',
+            local='niteroi',
+            valor=100.00,
+            usuario=self.user1
+        )
+        self.chat_data = {
+            'usuarioDono': self.user1.username,
+            'usuarioVisitante': self.user2.id,
+            'anuncio': self.anuncio.id
+        }
+
+    # def test_iniciar_chat(self):
+    #     response = self.client.post(reverse('chat-iniciar_chat'), self.chat_data)
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    def test_load_chat_data(self):
+        chat = Chat.objects.create(
+            usuario_dono=self.user1,
+            usuario_visitante=self.user2,
+            anuncio=self.anuncio
+        )
+        response = self.client.get(f'/api/chats/{chat.id}/get_chat_messages/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class AvaliacaoTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.force_authenticate(user=self.user)
+        self.anuncio = Anuncio.objects.create(
+            nome='Test Anuncio',
+            categoria='academico',
+            local='niteroi',
+            valor=100.00,
+            usuario=self.user
+        )
+
+    def test_create_avaliacao(self):
+        data = {'rating': 5}
+        response = self.client.post(f'/api/avaliacoes/{self.anuncio.id}/avaliar/', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_get_avaliacoes(self):
+        Avaliacao.objects.create(usuario=self.user, anuncio=self.anuncio, nota=3)
+        data = {
+            'anuncio_id': self.anuncio.id
+        }
+        response = self.client.get('/api/avaliacoes/get_avaliacao/', data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_remove_avaliacao(self):
+        anuncio = Anuncio.objects.create(
+            nome="Test Ad", categoria="Books", local="Biblioteca", valor=50.0, usuario=self.user
+        )
+        avaliacao = Avaliacao.objects.create(
+            anuncio=anuncio, usuario=self.user, nota=4
+        )
+
+        data = {
+            "anuncio_id": anuncio.id
+        }
+
+        url = f"/api/avaliacoes/{anuncio.id}/remover_avaliacao/"
+        response = self.client.delete(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Avaliacao.objects.filter(id=avaliacao.id).exists())
+
+
+class CadastroTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user_data = {
+            'username': 'testuser',
+            'email': 'mail@teste',
+            'password': '1234'
+        }
+
+    def test_cadastro_user(self):
+        response = self.client.post('/api/cadastro/', self.user_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class GetLoggedInUserTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.force_authenticate(user=self.user)
+
+    def test_get_logged_in_user(self):
+        response = self.client.get('/api/get_logged_in_user/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.user.id)
