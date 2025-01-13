@@ -24,7 +24,7 @@ function Register() {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{ width: '22rem' }}>
+            <div className="card p-4" >
                 <h2 className="text-center mb-4">Cadastro</h2>
                 <div className="form-group mb-3">
                     <label htmlFor="username">Username</label>
