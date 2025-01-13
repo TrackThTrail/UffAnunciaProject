@@ -124,8 +124,5 @@ describe("NavBar", () => {
         // Verifica a navegação correta
         expect(mockNavigate).toHaveBeenCalledWith('/');
     });
-
-
-
           
 })
