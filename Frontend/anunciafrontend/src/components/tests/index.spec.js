@@ -18,7 +18,7 @@ beforeEach(() => {
 afterEach(() => {
     jest.clearAllMocks();
 });
-jest.mock('axios'); // Mock do axios
+
 
 describe("NavBar", () => {
     it("deveria renderizar a navbar", () =>{
